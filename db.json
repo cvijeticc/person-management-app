@@ -1,0 +1,112 @@
+{
+  "persons": [
+    {
+      "id": 1,
+      "name": "Marko",
+      "surname": "Markovic",
+      "userType": "Administrator",
+      "createdDate": "2024-01-15",
+      "city": "Beograd",
+      "address": "Knez Mihailova 12"
+    },
+    {
+      "id": 2,
+      "name": "Ana",
+      "surname": "Anic",
+      "userType": "Korisnik",
+      "createdDate": "2024-02-03",
+      "city": "Novi Sad",
+      "address": "Zmaj Jovina 5"
+    },
+    {
+      "id": 3,
+      "name": "Milan",
+      "surname": "Milanovic",
+      "userType": "Korisnik",
+      "createdDate": "2024-02-20",
+      "city": "Nis",
+      "address": "Obrenoviceva 22"
+    },
+    {
+      "id": 4,
+      "name": "Jovana",
+      "surname": "Jovanovic",
+      "userType": "Menadzer",
+      "createdDate": "2024-03-11",
+      "city": "Beograd",
+      "address": "Bulevar oslobodjenja 45"
+    },
+    {
+      "id": 5,
+      "name": "Petar",
+      "surname": "Petrovic",
+      "userType": "Gost",
+      "createdDate": "2024-03-28",
+      "city": "Kragujevac",
+      "address": "Kralja Petra 8"
+    },
+    {
+      "id": 6,
+      "name": "Marija",
+      "surname": "Nikolic",
+      "userType": "Menadzer",
+      "createdDate": "2024-04-05",
+      "city": "Novi Sad",
+      "address": "Futoska 19"
+    },
+    {
+      "id": 7,
+      "name": "Nikola",
+      "surname": "Ilic",
+      "userType": "Korisnik",
+      "createdDate": "2024-04-19",
+      "city": "Subotica",
+      "address": "Korzo 3"
+    },
+    {
+      "id": 8,
+      "name": "Ivana",
+      "surname": "Stojanovic",
+      "userType": "Administrator",
+      "createdDate": "2024-05-02",
+      "city": "Beograd",
+      "address": "Nemanjina 30"
+    },
+    {
+      "id": 9,
+      "name": "Stefan",
+      "surname": "Djordjevic",
+      "userType": "Gost",
+      "createdDate": "2024-05-17",
+      "city": "Nis",
+      "address": "Vozda Karadjordja 14"
+    },
+    {
+      "id": 10,
+      "name": "Milica",
+      "surname": "Pavlovic",
+      "userType": "Korisnik",
+      "createdDate": "2024-06-01",
+      "city": "Cacak",
+      "address": "Gradsko setaliste 7"
+    },
+    {
+      "id": 11,
+      "name": "Aleksandar",
+      "surname": "Todorovic",
+      "userType": "Menadzer",
+      "createdDate": "2024-06-14",
+      "city": "Beograd",
+      "address": "Cara Dusana 55"
+    },
+    {
+      "id": 12,
+      "name": "Jelena",
+      "surname": "Ristic",
+      "userType": "Korisnik",
+      "createdDate": "2024-07-09",
+      "city": "Zrenjanin",
+      "address": "Trg slobode 2"
+    }
+  ]
+}
