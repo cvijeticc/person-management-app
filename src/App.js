@@ -3,6 +3,7 @@ import axios from 'axios';
 import './App.css';
 import Header from './components/Header';
 import Navigation from './components/Navigation';
+import PersonTable from './components/PersonTable';
 
 const API_URL = 'http://localhost:3001/persons';
 
@@ -26,7 +27,7 @@ function App() {
         <Navigation />
         <div className="content">
           <h2>Osobe</h2>
-          <p>Ucitano osoba: {persons.length}</p>
+          <PersonTable persons={persons} />
         </div>
       </div>
     </div>
