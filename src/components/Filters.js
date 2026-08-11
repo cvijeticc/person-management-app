@@ -1,4 +1,10 @@
-function Filters({ nameFilter, onNameFilterChange }) {
+function Filters({
+  nameFilter,
+  onNameFilterChange,
+  typeFilter,
+  onTypeFilterChange,
+  userTypes,
+}) {
   return (
     <div className="filters">
       <input
@@ -7,6 +13,17 @@ function Filters({ nameFilter, onNameFilterChange }) {
         value={nameFilter}
         onChange={(event) => onNameFilterChange(event.target.value)}
       />
+      <select
+        value={typeFilter}
+        onChange={(event) => onTypeFilterChange(event.target.value)}
+      >
+        <option value="">Svi tipovi</option>
+        {userTypes.map((type) => (
+          <option key={type} value={type}>
+            {type}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

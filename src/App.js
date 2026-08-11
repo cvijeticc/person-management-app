@@ -11,6 +11,7 @@ const API_URL = 'http://localhost:3001/persons';
 function App() {
   const [persons, setPersons] = useState([]);
   const [nameFilter, setNameFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
 
   useEffect(() => {
     loadPersons();
@@ -22,9 +23,21 @@ function App() {
     });
   }
 
-  const filteredPersons = persons.filter((person) =>
-    person.name.toLowerCase().startsWith(nameFilter.toLowerCase())
-  );
+  // tipovi korisnika se ne kucaju rucno, nego se izvlace iz liste osoba
+  const userTypes = [];
+  persons.forEach((person) => {
+    if (!userTypes.includes(person.userType)) {
+      userTypes.push(person.userType);
+    }
+  });
+
+  const filteredPersons = persons.filter((person) => {
+    const imeOdgovara = person.name
+      .toLowerCase()
+      .startsWith(nameFilter.toLowerCase());
+    const tipOdgovara = typeFilter === '' || person.userType === typeFilter;
+    return imeOdgovara && tipOdgovara;
+  });
 
   return (
     <div className="app">
@@ -33,7 +46,13 @@ function App() {
         <Navigation />
         <div className="content">
           <h2>Osobe</h2>
-          <Filters nameFilter={nameFilter} onNameFilterChange={setNameFilter} />
+          <Filters
+            nameFilter={nameFilter}
+            onNameFilterChange={setNameFilter}
+            typeFilter={typeFilter}
+            onTypeFilterChange={setTypeFilter}
+            userTypes={userTypes}
+          />
           <PersonTable persons={filteredPersons} />
         </div>
       </div>
