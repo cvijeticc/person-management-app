@@ -43,6 +43,18 @@
   padding: 20px;
 }
 
+.filters {
+  margin-bottom: 15px;
+}
+
+.filters input,
+.filters select {
+  padding: 8px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
 .table {
   border-collapse: collapse;
   width: 100%;
