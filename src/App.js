@@ -53,7 +53,13 @@ function App() {
             onTypeFilterChange={setTypeFilter}
             userTypes={userTypes}
           />
-          <PersonTable persons={filteredPersons} />
+          {filteredPersons.length === 0 ? (
+            <p className="no-results">
+              Ne postoji rezultat za zadate kriterijume pretrage.
+            </p>
+          ) : (
+            <PersonTable persons={filteredPersons} />
+          )}
         </div>
       </div>
     </div>
