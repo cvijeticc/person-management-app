@@ -5,6 +5,7 @@ import Header from './components/Header';
 import Navigation from './components/Navigation';
 import Filters from './components/Filters';
 import PersonTable from './components/PersonTable';
+import PersonForm from './components/PersonForm';
 
 const API_URL = 'http://localhost:3001/persons';
 
@@ -12,6 +13,7 @@ function App() {
   const [persons, setPersons] = useState([]);
   const [nameFilter, setNameFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     loadPersons();
@@ -20,6 +22,13 @@ function App() {
   function loadPersons() {
     axios.get(API_URL).then((response) => {
       setPersons(response.data);
+    });
+  }
+
+  function savePerson(formData) {
+    axios.post(API_URL, formData).then(() => {
+      setIsFormOpen(false);
+      loadPersons();
     });
   }
 
@@ -46,6 +55,9 @@ function App() {
         <Navigation />
         <div className="content">
           <h2>Osobe</h2>
+          <button className="new-button" onClick={() => setIsFormOpen(true)}>
+            Nova osoba
+          </button>
           <Filters
             nameFilter={nameFilter}
             onNameFilterChange={setNameFilter}
@@ -59,6 +71,12 @@ function App() {
             </p>
           ) : (
             <PersonTable persons={filteredPersons} />
+          )}
+          {isFormOpen && (
+            <PersonForm
+              onSave={savePerson}
+              onCancel={() => setIsFormOpen(false)}
+            />
           )}
         </div>
       </div>
