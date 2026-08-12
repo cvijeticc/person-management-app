@@ -1,13 +1,13 @@
 import { useState } from 'react';
 
-function PersonForm({ onSave, onCancel }) {
+function PersonForm({ person, onSave, onCancel }) {
   const [formData, setFormData] = useState({
-    name: '',
-    surname: '',
-    userType: '',
-    createdDate: '',
-    city: '',
-    address: '',
+    name: person ? person.name : '',
+    surname: person ? person.surname : '',
+    userType: person ? person.userType : '',
+    createdDate: person ? person.createdDate : '',
+    city: person ? person.city : '',
+    address: person ? person.address : '',
   });
 
   function handleChange(event) {
@@ -22,7 +22,7 @@ function PersonForm({ onSave, onCancel }) {
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <h3>Nova osoba</h3>
+        <h3>{person ? 'Izmena osobe' : 'Nova osoba'}</h3>
         <form onSubmit={handleSubmit}>
           <label>Ime</label>
           <input

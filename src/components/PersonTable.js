@@ -1,4 +1,4 @@
-function PersonTable({ persons }) {
+function PersonTable({ persons, onEdit }) {
   return (
     <table className="table">
       <thead>
@@ -10,6 +10,7 @@ function PersonTable({ persons }) {
           <th>Datum kreiranja</th>
           <th>Grad</th>
           <th>Adresa</th>
+          <th>Akcije</th>
         </tr>
       </thead>
       <tbody>
@@ -22,6 +23,11 @@ function PersonTable({ persons }) {
             <td>{person.createdDate}</td>
             <td>{person.city}</td>
             <td>{person.address}</td>
+            <td>
+              <button className="edit-button" onClick={() => onEdit(person)}>
+                Izmeni
+              </button>
+            </td>
           </tr>
         ))}
       </tbody>

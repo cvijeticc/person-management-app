@@ -14,6 +14,7 @@ function App() {
   const [nameFilter, setNameFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState(null);
 
   useEffect(() => {
     loadPersons();
@@ -25,11 +26,33 @@ function App() {
     });
   }
 
+  function openNewForm() {
+    setSelectedPerson(null);
+    setIsFormOpen(true);
+  }
+
+  function openEditForm(person) {
+    setSelectedPerson(person);
+    setIsFormOpen(true);
+  }
+
+  function closeForm() {
+    setIsFormOpen(false);
+    setSelectedPerson(null);
+  }
+
   function savePerson(formData) {
-    axios.post(API_URL, formData).then(() => {
-      setIsFormOpen(false);
-      loadPersons();
-    });
+    if (selectedPerson) {
+      axios.put(API_URL + '/' + selectedPerson.id, formData).then(() => {
+        closeForm();
+        loadPersons();
+      });
+    } else {
+      axios.post(API_URL, formData).then(() => {
+        closeForm();
+        loadPersons();
+      });
+    }
   }
 
   // tipovi korisnika se ne kucaju rucno, nego se izvlace iz liste osoba
@@ -55,7 +78,7 @@ function App() {
         <Navigation />
         <div className="content">
           <h2>Osobe</h2>
-          <button className="new-button" onClick={() => setIsFormOpen(true)}>
+          <button className="new-button" onClick={openNewForm}>
             Nova osoba
           </button>
           <Filters
@@ -70,12 +93,13 @@ function App() {
               Ne postoji rezultat za zadate kriterijume pretrage.
             </p>
           ) : (
-            <PersonTable persons={filteredPersons} />
+            <PersonTable persons={filteredPersons} onEdit={openEditForm} />
           )}
           {isFormOpen && (
             <PersonForm
+              person={selectedPerson}
               onSave={savePerson}
-              onCancel={() => setIsFormOpen(false)}
+              onCancel={closeForm}
             />
           )}
         </div>
