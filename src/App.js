@@ -101,6 +101,11 @@ function App() {
               Ne postoji rezultat za zadate kriterijume pretrage.
             </p>
           ) : (
+            <p className="results-count">
+              Broj prikazanih osoba: {filteredPersons.length}
+            </p>
+          )}
+          {filteredPersons.length > 0 && (
             <PersonTable
               persons={filteredPersons}
               onEdit={openEditForm}

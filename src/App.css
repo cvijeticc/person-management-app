@@ -43,6 +43,10 @@
   padding: 20px;
 }
 
+.content h2 {
+  margin-top: 0;
+}
+
 .new-button {
   background-color: #27ae60;
   color: white;
@@ -72,6 +76,11 @@
 .no-results {
   color: #c0392b;
   font-weight: bold;
+}
+
+.results-count {
+  color: #7f8c8d;
+  font-size: 14px;
 }
 
 .table {
