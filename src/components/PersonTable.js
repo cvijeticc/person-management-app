@@ -1,4 +1,4 @@
-function PersonTable({ persons, onEdit }) {
+function PersonTable({ persons, onEdit, onDelete }) {
   return (
     <table className="table">
       <thead>
@@ -26,6 +26,12 @@ function PersonTable({ persons, onEdit }) {
             <td>
               <button className="edit-button" onClick={() => onEdit(person)}>
                 Izmeni
+              </button>
+              <button
+                className="delete-button"
+                onClick={() => onDelete(person.id)}
+              >
+                Obrisi
               </button>
             </td>
           </tr>

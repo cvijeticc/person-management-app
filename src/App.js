@@ -55,6 +55,14 @@ function App() {
     }
   }
 
+  function deletePerson(id) {
+    if (window.confirm('Da li ste sigurni da zelite da obrisete ovu osobu?')) {
+      axios.delete(API_URL + '/' + id).then(() => {
+        loadPersons();
+      });
+    }
+  }
+
   // tipovi korisnika se ne kucaju rucno, nego se izvlace iz liste osoba
   const userTypes = [];
   persons.forEach((person) => {
@@ -93,7 +101,11 @@ function App() {
               Ne postoji rezultat za zadate kriterijume pretrage.
             </p>
           ) : (
-            <PersonTable persons={filteredPersons} onEdit={openEditForm} />
+            <PersonTable
+              persons={filteredPersons}
+              onEdit={openEditForm}
+              onDelete={deletePerson}
+            />
           )}
           {isFormOpen && (
             <PersonForm
