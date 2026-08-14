@@ -13,11 +13,6 @@ const navGroups = [
 
 // styles je funkcija da bi se moglo pitati da li je link trenutno aktivan
 const navStyles = (props) => ({
-  root: {
-    width: 200,
-    backgroundColor: '#ecf0f1',
-    paddingTop: 20,
-  },
   link: {
     backgroundColor: props.isSelected ? '#2c3e50' : 'transparent',
     borderLeft: props.isSelected ? '4px solid #e67e22' : '4px solid transparent',
@@ -32,7 +27,11 @@ const navStyles = (props) => ({
 });
 
 function Navigation() {
-  return <Nav groups={navGroups} selectedKey="osobe" styles={navStyles} />;
+  return (
+    <div className="navigation">
+      <Nav groups={navGroups} selectedKey="osobe" styles={navStyles} />
+    </div>
+  );
 }
 
 export default Navigation;

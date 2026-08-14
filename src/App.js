@@ -89,7 +89,7 @@ function App() {
   return (
     <div className="app">
       <Header />
-      <Stack horizontal styles={{ root: { minHeight: 'calc(100vh - 62px)' } }}>
+      <Stack horizontal styles={{ root: { flexGrow: 1 } }}>
         <Navigation />
         <Stack.Item grow className="content">
           <Text variant="xLargePlus" block>
