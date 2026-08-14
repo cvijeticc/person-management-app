@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Stack } from '@fluentui/react';
 import axios from 'axios';
 import './App.css';
 import Header from './components/Header';
@@ -82,9 +83,9 @@ function App() {
   return (
     <div className="app">
       <Header />
-      <div className="main">
+      <Stack horizontal styles={{ root: { minHeight: 'calc(100vh - 62px)' } }}>
         <Navigation />
-        <div className="content">
+        <Stack.Item grow className="content">
           <h2>Osobe</h2>
           <button className="new-button" onClick={openNewForm}>
             Nova osoba
@@ -119,8 +120,8 @@ function App() {
               onCancel={closeForm}
             />
           )}
-        </div>
-      </div>
+        </Stack.Item>
+      </Stack>
     </div>
   );
 }

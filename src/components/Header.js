@@ -1,7 +1,11 @@
+import { Text } from '@fluentui/react';
+
 function Header() {
   return (
     <header className="header">
-      <h1>Evidencija osoba</h1>
+      <Text variant="xLarge" styles={{ root: { color: 'white' } }}>
+        Evidencija osoba
+      </Text>
     </header>
   );
 }
