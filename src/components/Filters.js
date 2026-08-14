@@ -1,3 +1,5 @@
+import { Stack, TextField, Dropdown } from '@fluentui/react';
+
 function Filters({
   nameFilter,
   onNameFilterChange,
@@ -5,26 +7,28 @@ function Filters({
   onTypeFilterChange,
   userTypes,
 }) {
+  // Dropdown ocekuje niz objekata sa key i text
+  const options = [
+    { key: '', text: 'Svi tipovi' },
+    ...userTypes.map((type) => ({ key: type, text: type })),
+  ];
+
   return (
-    <div className="filters">
-      <input
-        type="text"
-        placeholder="Pretraga po imenu"
+    <Stack horizontal tokens={{ childrenGap: 15 }}>
+      <TextField
+        label="Pretraga po imenu"
         value={nameFilter}
-        onChange={(event) => onNameFilterChange(event.target.value)}
+        onChange={(event, newValue) => onNameFilterChange(newValue || '')}
+        styles={{ root: { width: 220 } }}
       />
-      <select
-        value={typeFilter}
-        onChange={(event) => onTypeFilterChange(event.target.value)}
-      >
-        <option value="">Svi tipovi</option>
-        {userTypes.map((type) => (
-          <option key={type} value={type}>
-            {type}
-          </option>
-        ))}
-      </select>
-    </div>
+      <Dropdown
+        label="Tip korisnika"
+        selectedKey={typeFilter}
+        options={options}
+        onChange={(event, option) => onTypeFilterChange(option.key)}
+        styles={{ root: { width: 220 } }}
+      />
+    </Stack>
   );
 }
 
