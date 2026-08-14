@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Stack } from '@fluentui/react';
+import {
+  Stack,
+  PrimaryButton,
+  MessageBar,
+  MessageBarType,
+  Text,
+} from '@fluentui/react';
 import axios from 'axios';
 import './App.css';
 import Header from './components/Header';
@@ -86,10 +92,15 @@ function App() {
       <Stack horizontal styles={{ root: { minHeight: 'calc(100vh - 62px)' } }}>
         <Navigation />
         <Stack.Item grow className="content">
-          <h2>Osobe</h2>
-          <button className="new-button" onClick={openNewForm}>
-            Nova osoba
-          </button>
+          <Text variant="xLargePlus" block>
+            Osobe
+          </Text>
+          <PrimaryButton
+            text="Nova osoba"
+            iconProps={{ iconName: 'Add' }}
+            onClick={openNewForm}
+            styles={{ root: { margin: '15px 0' } }}
+          />
           <Filters
             nameFilter={nameFilter}
             onNameFilterChange={setNameFilter}
@@ -98,13 +109,13 @@ function App() {
             userTypes={userTypes}
           />
           {filteredPersons.length === 0 ? (
-            <p className="no-results">
+            <MessageBar messageBarType={MessageBarType.warning}>
               Ne postoji rezultat za zadate kriterijume pretrage.
-            </p>
+            </MessageBar>
           ) : (
-            <p className="results-count">
+            <Text variant="small" block styles={{ root: { margin: '15px 0' } }}>
               Broj prikazanih osoba: {filteredPersons.length}
-            </p>
+            </Text>
           )}
           {filteredPersons.length > 0 && (
             <PersonTable

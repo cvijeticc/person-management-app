@@ -1,4 +1,14 @@
 import { useState } from 'react';
+import {
+  Dialog,
+  DialogType,
+  DialogFooter,
+  TextField,
+  PrimaryButton,
+  DefaultButton,
+  MessageBar,
+  MessageBarType,
+} from '@fluentui/react';
 
 function PersonForm({ person, onSave, onCancel }) {
   const [formData, setFormData] = useState({
@@ -9,79 +19,81 @@ function PersonForm({ person, onSave, onCancel }) {
     city: person ? person.city : '',
     address: person ? person.address : '',
   });
+  const [error, setError] = useState('');
 
-  function handleChange(event) {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
+  function handleChange(field, newValue) {
+    setFormData({ ...formData, [field]: newValue || '' });
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  function handleSave() {
+    // Fluent-ov required samo prikaze zvezdicu, ne zaustavlja cuvanje,
+    // pa se prazna polja moraju proveriti rucno
+    const imaPraznih = Object.values(formData).some(
+      (value) => value.trim() === ''
+    );
+    if (imaPraznih) {
+      setError('Sva polja su obavezna.');
+      return;
+    }
     onSave(formData);
   }
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <h3>{person ? 'Izmena osobe' : 'Nova osoba'}</h3>
-        <form onSubmit={handleSubmit}>
-          <label>Ime</label>
-          <input
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
+    <Dialog
+      hidden={false}
+      onDismiss={onCancel}
+      dialogContentProps={{
+        type: DialogType.normal,
+        title: person ? 'Izmena osobe' : 'Nova osoba',
+      }}
+    >
+      {error && (
+        <MessageBar messageBarType={MessageBarType.error}>{error}</MessageBar>
+      )}
 
-          <label>Prezime</label>
-          <input
-            name="surname"
-            value={formData.surname}
-            onChange={handleChange}
-            required
-          />
+      <TextField
+        label="Ime"
+        required
+        value={formData.name}
+        onChange={(event, newValue) => handleChange('name', newValue)}
+      />
+      <TextField
+        label="Prezime"
+        required
+        value={formData.surname}
+        onChange={(event, newValue) => handleChange('surname', newValue)}
+      />
+      <TextField
+        label="Tip korisnika"
+        required
+        value={formData.userType}
+        onChange={(event, newValue) => handleChange('userType', newValue)}
+      />
+      <TextField
+        label="Datum kreiranja"
+        type="date"
+        required
+        value={formData.createdDate}
+        onChange={(event, newValue) => handleChange('createdDate', newValue)}
+      />
+      <TextField
+        label="Grad"
+        required
+        value={formData.city}
+        onChange={(event, newValue) => handleChange('city', newValue)}
+      />
+      <TextField
+        label="Adresa"
+        required
+        value={formData.address}
+        onChange={(event, newValue) => handleChange('address', newValue)}
+      />
 
-          <label>Tip korisnika</label>
-          <input
-            name="userType"
-            value={formData.userType}
-            onChange={handleChange}
-            required
-          />
-
-          <label>Datum kreiranja</label>
-          <input
-            type="date"
-            name="createdDate"
-            value={formData.createdDate}
-            onChange={handleChange}
-            required
-          />
-
-          <label>Grad</label>
-          <input
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            required
-          />
-
-          <label>Adresa</label>
-          <input
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            required
-          />
-
-          <div className="modal-buttons">
-            <button type="submit">Sacuvaj</button>
-            <button type="button" onClick={onCancel}>
-              Otkazi
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      <DialogFooter>
+        <PrimaryButton text="Sacuvaj" onClick={handleSave} />
+        <DefaultButton text="Otkazi" onClick={onCancel} />
+      </DialogFooter>
+    </Dialog>
   );
 }
 
