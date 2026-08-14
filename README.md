@@ -42,8 +42,9 @@ tipa cije ime pocinje unetom vrednoscu. Ako nijedna osoba ne zadovoljava kriteri
 umesto tabele se ispisuje poruka **„Ne postoji rezultat za zadate kriterijume pretrage."**
 
 **3. Kreiranje nove osobe**
-Dugme `Nova osoba` otvara modal sa praznom formom. Nakon cuvanja salje se `POST` zahtev,
-modal se zatvara i tabela se osvezava.
+Dugme `Nova osoba` otvara Fluent `Dialog` sa praznom formom. Ako je neko polje prazno,
+prikazuje se poruka i zahtev se ne salje. Nakon cuvanja salje se `POST` zahtev,
+dialog se zatvara i tabela se osvezava.
 
 **4. Izmena osobe**
 Dugme `Izmeni` u redu tabele otvara isti modal, ali popunjen podacima te osobe. Nakon
@@ -51,6 +52,10 @@ cuvanja salje se `PUT` zahtev i tabela se osvezava.
 
 **5. Brisanje osobe**
 Dugme `Obrisi` trazi potvrdu, a zatim salje `DELETE` zahtev i osvezava tabelu.
+
+> **Napomena o validaciji:** Fluent-ov `required` na `TextField`-u samo prikazuje
+> zvezdicu pored labele — on **ne zaustavlja** cuvanje. Zato se prazna polja
+> proveravaju rucno u `handleSave` i greska se prikazuje kroz `MessageBar`.
 
 ### Izgled
 
@@ -67,9 +72,27 @@ Interfejs je podeljen na tri dela:
 ## Tehnologije
 
 - **React 18** (create-react-app / react-scripts)
+- **Fluent UI React v8** (`@fluentui/react`) — UI komponente
 - **axios** — komunikacija sa API-jem
 - **json-server** — fake REST API
-- **HTML i obican CSS** (bez UI framework-a)
+
+### Koje Fluent UI komponente se koriste
+
+| Komponenta | Gde |
+|---|---|
+| `ThemeProvider` | omotava celu aplikaciju u `index.js` |
+| `Stack` / `Stack.Item` | raspored stranice i razmaci izmedju filtera |
+| `Nav` | leva navigacija sa tri linka |
+| `Text` | naslovi i pomocni tekst |
+| `DetailsList` | tabela sa osobama |
+| `TextField` | polje za pretragu i sva polja forme |
+| `Dropdown` | filter po tipu korisnika |
+| `Dialog` / `DialogFooter` | modal za kreiranje i izmenu |
+| `PrimaryButton` / `DefaultButton` | dugmad |
+| `MessageBar` | poruka kada nema rezultata i greska u formi |
+
+Obican CSS je ostao samo za ono sto Fluent ne pokriva — raspored stranice,
+zaglavlje i pozadinu leve navigacije ([App.css](src/App.css)).
 
 ---
 
@@ -82,16 +105,16 @@ Interfejs je podeljen na tri dela:
 ├── public/
 │   └── index.html
 └── src/
-    ├── index.js                # ulazna tacka, renderuje App
+    ├── index.js                # ulazna tacka, ThemeProvider + initializeIcons
     ├── index.css
     ├── App.js                  # glavna komponenta - state, API pozivi, filtriranje
-    ├── App.css                 # svi stilovi
+    ├── App.css                 # ono malo CSS-a koje Fluent ne pokriva
     └── components/
         ├── Header.js           # zaglavlje
-        ├── Navigation.js       # leva navigacija sa 3 linka
-        ├── Filters.js          # input za ime + dropdown za tip korisnika
-        ├── PersonTable.js      # tabela sa osobama i dugmadima Izmeni/Obrisi
-        └── PersonForm.js       # modal forma za kreiranje i izmenu
+        ├── Navigation.js       # leva navigacija (Nav) sa 3 linka
+        ├── Filters.js          # TextField za ime + Dropdown za tip korisnika
+        ├── PersonTable.js      # DetailsList sa dugmadima Izmeni/Obrisi
+        └── PersonForm.js       # Dialog forma za kreiranje i izmenu
 ```
 
 ---
