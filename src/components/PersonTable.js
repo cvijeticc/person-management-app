@@ -38,7 +38,7 @@ const columns = [
     minWidth: 130,
     maxWidth: 180,
   },
-  { key: 'actions', name: 'Akcije', minWidth: 150 },
+  { key: 'actions', name: 'Akcije', minWidth: 220 },
 ];
 
 function PersonTable({ persons, onEdit, onDelete }) {
