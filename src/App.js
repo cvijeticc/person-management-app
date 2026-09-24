@@ -1,31 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Stack,
   PrimaryButton,
   MessageBar,
   MessageBarType,
   Text,
-} from '@fluentui/react';
-import axios from 'axios';
-import './App.css';
-import Header from './components/Header';
-import Navigation from './components/Navigation';
-import Filters from './components/Filters';
-import PersonTable from './components/PersonTable';
-import PersonForm from './components/PersonForm';
+} from "@fluentui/react";
+import axios from "axios";
+import "./App.css";
+import Header from "./components/Header";
+import Navigation from "./components/Navigation";
+import Filters from "./components/Filters";
+import PersonTable from "./components/PersonTable";
+import PersonForm from "./components/PersonForm";
 
-const API_URL = 'http://localhost:3001/persons';
+const API_URL = "http://localhost:3001/persons";
 
 function App() {
   const [persons, setPersons] = useState([]);
-  const [nameFilter, setNameFilter] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
+  const [nameFilter, setNameFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
 
   useEffect(() => {
     loadPersons();
   }, []);
+  //ove prazne uglaste zagrade na kraju govore reactu da se ovo pokrece jednom posle
+  //prvog rendera i nikad vise
 
   function loadPersons() {
     axios.get(API_URL).then((response) => {
@@ -50,7 +52,7 @@ function App() {
 
   function savePerson(formData) {
     if (selectedPerson) {
-      axios.put(API_URL + '/' + selectedPerson.id, formData).then(() => {
+      axios.put(API_URL + "/" + selectedPerson.id, formData).then(() => {
         closeForm();
         loadPersons();
       });
@@ -63,8 +65,8 @@ function App() {
   }
 
   function deletePerson(id) {
-    if (window.confirm('Da li ste sigurni da zelite da obrisete ovu osobu?')) {
-      axios.delete(API_URL + '/' + id).then(() => {
+    if (window.confirm("Da li ste sigurni da zelite da obrisete ovu osobu?")) {
+      axios.delete(API_URL + "/" + id).then(() => {
         loadPersons();
       });
     }
@@ -82,7 +84,7 @@ function App() {
     const imeOdgovara = person.name
       .toLowerCase()
       .startsWith(nameFilter.toLowerCase());
-    const tipOdgovara = typeFilter === '' || person.userType === typeFilter;
+    const tipOdgovara = typeFilter === "" || person.userType === typeFilter;
     return imeOdgovara && tipOdgovara;
   });
 
@@ -97,9 +99,9 @@ function App() {
           </Text>
           <PrimaryButton
             text="Nova osoba"
-            iconProps={{ iconName: 'Add' }}
+            iconProps={{ iconName: "Add" }}
             onClick={openNewForm}
-            styles={{ root: { margin: '15px 0' } }}
+            styles={{ root: { margin: "15px 0" } }}
           />
           <Filters
             nameFilter={nameFilter}
@@ -113,7 +115,7 @@ function App() {
               Ne postoji rezultat za zadate kriterijume pretrage.
             </MessageBar>
           ) : (
-            <Text variant="small" block styles={{ root: { margin: '15px 0' } }}>
+            <Text variant="small" block styles={{ root: { margin: "15px 0" } }}>
               Broj prikazanih osoba: {filteredPersons.length}
             </Text>
           )}

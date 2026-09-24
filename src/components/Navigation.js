@@ -1,12 +1,12 @@
-import { Nav } from '@fluentui/react';
+import { Nav } from "@fluentui/react";
 
 // linkovi se Nav komponenti prosledjuju kao niz grupa
 const navGroups = [
   {
     links: [
-      { key: 'osobe', name: 'Osobe', url: '' },
-      { key: 'izvestaji', name: 'Izvestaji', url: '' },
-      { key: 'podesavanja', name: 'Podesavanja', url: '' },
+      { key: "osobe", name: "Osobe", url: "" },
+      { key: "izvestaji", name: "Izvestaji", url: "" },
+      { key: "podesavanja", name: "Podesavanja", url: "" },
     ],
   },
 ];
@@ -14,13 +14,17 @@ const navGroups = [
 // styles je funkcija da bi se moglo pitati da li je link trenutno aktivan
 const navStyles = (props) => ({
   link: {
-    backgroundColor: props.isSelected ? '#2c3e50' : 'transparent',
-    borderLeft: props.isSelected ? '4px solid #e67e22' : '4px solid transparent',
-    // selectors stilizuje element unutar linka (Fluent ga inace oboji svojom bojom)
+    backgroundColor: props.isSelected ? "#2c3e50" : "transparent",
+    borderLeft: props.isSelected
+      ? "4px solid #e67e22"
+      : "4px solid transparent",
     selectors: {
-      '.ms-Nav-linkText': {
-        color: props.isSelected ? 'white' : '#2c3e50',
-        fontWeight: props.isSelected ? 'bold' : 'normal',
+      // "&:after": {
+      //   borderLeft: "none", // ugasi Fluent-ovu plavu liniju
+      // },
+      ".ms-Nav-linkText": {
+        color: props.isSelected ? "white" : "#2c3e50",
+        fontWeight: props.isSelected ? "bold" : "normal",
       },
     },
   },
