@@ -42,6 +42,7 @@ const columns = [
 ];
 
 function PersonTable({ persons, onEdit, onDelete }) {
+  //ovde se prima props iz App.js
   // poziva se za svaku celiju - za kolonu "actions" vracamo dugmad,
   // a za sve ostale obicnu vrednost iz objekta
   function renderItemColumn(person, index, column) {

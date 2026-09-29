@@ -1,4 +1,4 @@
-import { Stack, TextField, Dropdown } from '@fluentui/react';
+import { Stack, TextField, Dropdown } from "@fluentui/react";
 
 function Filters({
   nameFilter,
@@ -9,7 +9,7 @@ function Filters({
 }) {
   // Dropdown ocekuje niz objekata sa key i text
   const options = [
-    { key: '', text: 'Svi tipovi' },
+    { key: "", text: "Svi tipovi" },
     ...userTypes.map((type) => ({ key: type, text: type })),
   ];
 
@@ -18,7 +18,8 @@ function Filters({
       <TextField
         label="Pretraga po imenu"
         value={nameFilter}
-        onChange={(event, newValue) => onNameFilterChange(newValue || '')}
+        onChange={(event, newValue) => onNameFilterChange(newValue || "")} //kada se upise neko slovo
+        //u textfield onda se prvo poziva ova linija koda i onda newValue postaje to slovo
         styles={{ root: { width: 220 } }}
       />
       <Dropdown

@@ -105,9 +105,9 @@ function App() {
           />
           <Filters
             nameFilter={nameFilter}
-            onNameFilterChange={setNameFilter}
+            onNameFilterChange={setNameFilter} //ova 2 su zajedno
             typeFilter={typeFilter}
-            onTypeFilterChange={setTypeFilter}
+            onTypeFilterChange={setTypeFilter} //ova 2 su zajedno
             userTypes={userTypes}
           />
           {filteredPersons.length === 0 ? (
