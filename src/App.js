@@ -75,7 +75,9 @@ function App() {
   // tipovi korisnika se ne kucaju rucno, nego se izvlace iz liste osoba
   const userTypes = [];
   persons.forEach((person) => {
+    //prodje se kroz celu listu osoba i za svaku osobu se proveri da li je njen tip vec u listi tipova
     if (!userTypes.includes(person.userType)) {
+      //ako ne postoji onda se doda u listu tipova
       userTypes.push(person.userType);
     }
   });

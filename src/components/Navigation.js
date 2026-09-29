@@ -22,6 +22,10 @@ const navStyles = (props) => ({
       // "&:after": {
       //   borderLeft: "none", // ugasi Fluent-ovu plavu liniju
       // },
+      // Promenjena default hover boja na dugmetu
+      ".ms-Nav-compositeLink:hover &": {
+        backgroundColor: props.isSelected ? "#34495e" : "#dfe6e9",
+      },
       ".ms-Nav-linkText": {
         color: props.isSelected ? "white" : "#2c3e50",
         fontWeight: props.isSelected ? "bold" : "normal",
