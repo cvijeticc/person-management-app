@@ -36,7 +36,13 @@ const columns = [
   },
 ];
 
-function PersonTable({ persons, onSelectionChange }) {
+function PersonTable({
+  persons,
+  onSelectionChange,
+  sortField,
+  sortDescending,
+  onSort,
+}) {
   //ovde se prima props iz App.js
   // Selection pamti koji je red selektovan, a kad se selekcija promeni
   // javlja se App.js-u koja je osoba selektovana (ili null ako nije nijedna)
@@ -49,10 +55,18 @@ function PersonTable({ persons, onSelectionChange }) {
       }),
   );
 
+  // svakoj koloni se dodaje strelica za sortiranje i klik koji javlja App.js-u koja je kolona kliknuta
+  const sortableColumns = columns.map((column) => ({
+    ...column,
+    isSorted: column.key === sortField,
+    isSortedDescending: sortDescending,
+    onColumnClick: () => onSort(column.key),
+  }));
+
   return (
     <DetailsList
       items={persons}
-      columns={columns}
+      columns={sortableColumns}
       getKey={(person) => person.id}
       selection={selection}
       selectionMode={SelectionMode.single}

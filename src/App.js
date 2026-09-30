@@ -42,6 +42,8 @@ function App() {
   const [personToDelete, setPersonToDelete] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [sortField, setSortField] = useState("");
+  const [sortDescending, setSortDescending] = useState(false);
 
   useEffect(() => {
     // ako korisnik ukuca novo slovo pre isteka 500ms, cleanup otkazuje prethodni timer
@@ -58,8 +60,8 @@ function App() {
 
   useEffect(() => {
     loadPersons();
-  }, [debouncedName, typeFilter, page]);
-  //ucitavanje se pokrece na prvom renderu i svaki put kad se promeni ime (posle 500ms), tip ili strana
+  }, [debouncedName, typeFilter, page, sortField, sortDescending]);
+  //ucitavanje se pokrece na prvom renderu i svaki put kad se promeni ime (posle 500ms), tip, strana ili sortiranje
 
   function loadAllPersons() {
     axios.get(API_URL).then((response) => {
@@ -68,7 +70,7 @@ function App() {
   }
 
   function loadPersons() {
-    // fetch(API_URL + "?name_like=^" + debouncedName + "&userType=" + typeFilter + "&_page=" + page + "&_limit=" + PAGE_SIZE)
+    // fetch(API_URL + "?name_like=^" + debouncedName + "&userType=" + typeFilter + "&_sort=" + sortField + "&_order=" + (sortDescending ? "desc" : "asc") + "&_page=" + page + "&_limit=" + PAGE_SIZE)
     //   .then((response) => {
     //     setTotalCount(Number(response.headers.get("X-Total-Count")));
     //     return response.json();
@@ -85,6 +87,8 @@ function App() {
         params: {
           name_like: debouncedName ? "^" + escapeRegex(debouncedName) : undefined,
           userType: typeFilter || undefined,
+          _sort: sortField || undefined,
+          _order: sortDescending ? "desc" : "asc",
           _page: page,
           _limit: PAGE_SIZE,
         },
@@ -99,6 +103,17 @@ function App() {
         setPersons(response.data);
         setTotalCount(total);
       });
+  }
+
+  // prvi klik na kolonu sortira rastuce (Id opadajuce), svaki sledeci klik na istu kolonu okrece smer
+  function sortBy(field) {
+    if (field === sortField) {
+      setSortDescending(!sortDescending);
+    } else {
+      setSortField(field);
+      setSortDescending(field === "id");
+    }
+    setPage(1);
   }
 
   function openNewForm() {
@@ -229,6 +244,9 @@ function App() {
             <PersonTable
               persons={persons}
               onSelectionChange={setSelectedRow}
+              sortField={sortField}
+              sortDescending={sortDescending}
+              onSort={sortBy}
             />
           )}
           <Dialog
