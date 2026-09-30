@@ -17,8 +17,10 @@ import Navigation from "./components/Navigation";
 import Filters from "./components/Filters";
 import PersonTable from "./components/PersonTable";
 import PersonForm from "./components/PersonForm";
+import Pagination from "./components/Pagination";
 
 const API_URL = "http://localhost:3001/persons";
+const PAGE_SIZE = 10;
 
 // specijalni znaci u imenu (npr. "(") ne smeju da se tumace kao regex
 function escapeRegex(text) {
@@ -29,6 +31,8 @@ function App() {
   const [persons, setPersons] = useState([]);
   // sve osobe, potrebne samo da bi se izvukli tipovi korisnika za dropdown
   const [allPersons, setAllPersons] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   const [nameFilter, setNameFilter] = useState("");
   // ime koje se stvarno salje serveru, azurira se tek 500ms nakon poslednjeg kucanja
   const [debouncedName, setDebouncedName] = useState("");
@@ -42,6 +46,7 @@ function App() {
     // ako korisnik ukuca novo slovo pre isteka 500ms, cleanup otkazuje prethodni timer
     const timer = setTimeout(() => {
       setDebouncedName(nameFilter);
+      setPage(1);
     }, 500);
     return () => clearTimeout(timer);
   }, [nameFilter]);
@@ -52,8 +57,8 @@ function App() {
 
   useEffect(() => {
     loadPersons();
-  }, [debouncedName, typeFilter]);
-  //ucitavanje se pokrece na prvom renderu i svaki put kad se promeni ime (posle 500ms) ili tip
+  }, [debouncedName, typeFilter, page]);
+  //ucitavanje se pokrece na prvom renderu i svaki put kad se promeni ime (posle 500ms), tip ili strana
 
   function loadAllPersons() {
     axios.get(API_URL).then((response) => {
@@ -62,23 +67,36 @@ function App() {
   }
 
   function loadPersons() {
-    // fetch(API_URL + "?name_like=^" + debouncedName + "&userType=" + typeFilter)
-    //   .then((response) => response.json())
+    // fetch(API_URL + "?name_like=^" + debouncedName + "&userType=" + typeFilter + "&_page=" + page + "&_limit=" + PAGE_SIZE)
+    //   .then((response) => {
+    //     setTotalCount(Number(response.headers.get("X-Total-Count")));
+    //     return response.json();
+    //   })
     //   .then((data) => {
     //     setPersons(data);
     //   });
 
-    // ime i tip filtriraju se na serveru
+    // ime i tip filtriraju se na serveru, a server vraca samo jednu stranu (10 osoba)
+    // ukupan broj osoba stize u headeru X-Total-Count
     // name_like je regex pa "^" znaci da ime pocinje tim slovima
     axios
       .get(API_URL, {
         params: {
           name_like: debouncedName ? "^" + escapeRegex(debouncedName) : undefined,
           userType: typeFilter || undefined,
+          _page: page,
+          _limit: PAGE_SIZE,
         },
       })
       .then((response) => {
+        const total = Number(response.headers["x-total-count"]);
+        // ako je obrisana poslednja osoba sa poslednje strane vrati se na prethodnu
+        if (response.data.length === 0 && page > 1) {
+          setPage(page - 1);
+          return;
+        }
         setPersons(response.data);
+        setTotalCount(total);
       });
   }
 
@@ -183,7 +201,10 @@ function App() {
             nameFilter={nameFilter}
             onNameFilterChange={setNameFilter} //ova 2 su zajedno
             typeFilter={typeFilter}
-            onTypeFilterChange={setTypeFilter} //ova 2 su zajedno
+            onTypeFilterChange={(type) => {
+              setTypeFilter(type);
+              setPage(1);
+            }} //ova 2 su zajedno
             userTypes={userTypes}
           />
           {persons.length === 0 ? (
@@ -192,7 +213,8 @@ function App() {
             </MessageBar>
           ) : (
             <Text variant="small" block styles={{ root: { margin: "15px 0" } }}>
-              Broj prikazanih osoba: {persons.length}
+              Broj prikazanih osoba: od {(page - 1) * PAGE_SIZE + 1} do{" "}
+              {(page - 1) * PAGE_SIZE + persons.length}
             </Text>
           )}
           {persons.length > 0 && (
@@ -219,6 +241,11 @@ function App() {
               />
             </DialogFooter>
           </Dialog>
+          <Pagination
+            page={page}
+            totalPages={Math.ceil(totalCount / PAGE_SIZE)}
+            onPageChange={setPage}
+          />
           {isFormOpen && (
             <PersonForm
               person={selectedPerson}
