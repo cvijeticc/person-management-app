@@ -41,6 +41,7 @@ function App() {
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [personToDelete, setPersonToDelete] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     // ako korisnik ukuca novo slovo pre isteka 500ms, cleanup otkazuje prethodni timer
@@ -172,10 +173,11 @@ function App() {
           <Text variant="xLargePlus" block>
             Osobe
           </Text>
+          {/* sve u jednom redu: Nova osoba, Filteri, filteri (kad su otvoreni), Izmeni i Obrisi (kad je red selektovan) */}
           <Stack
             horizontal
-            horizontalAlign="space-between"
-            verticalAlign="center"
+            verticalAlign="end"
+            tokens={{ childrenGap: 15 }}
             styles={{ root: { margin: "15px 0" } }}
           >
             <PrimaryButton
@@ -183,30 +185,36 @@ function App() {
               iconProps={{ iconName: "Add" }}
               onClick={openNewForm}
             />
-            {/* dugmad se pojavljuju tek kad je neki red selektovan */}
+            <DefaultButton
+              text="Filteri"
+              iconProps={{ iconName: "Filter" }}
+              onClick={() => setShowFilters(!showFilters)}
+            />
+            {showFilters && (
+              <Filters
+                nameFilter={nameFilter}
+                onNameFilterChange={setNameFilter} //ova 2 su zajedno
+                typeFilter={typeFilter}
+                onTypeFilterChange={(type) => {
+                  setTypeFilter(type);
+                  setPage(1);
+                }} //ova 2 su zajedno
+                userTypes={userTypes}
+              />
+            )}
             {selectedRow && (
-              <Stack horizontal tokens={{ childrenGap: 8 }}>
-                <DefaultButton
-                  text="Izmeni"
-                  onClick={() => openEditForm(selectedRow)}
-                />
-                <DefaultButton
-                  text="Obrisi"
-                  onClick={() => setPersonToDelete(selectedRow.id)}
-                />
-              </Stack>
+              <DefaultButton
+                text="Izmeni"
+                onClick={() => openEditForm(selectedRow)}
+              />
+            )}
+            {selectedRow && (
+              <DefaultButton
+                text="Obrisi"
+                onClick={() => setPersonToDelete(selectedRow.id)}
+              />
             )}
           </Stack>
-          <Filters
-            nameFilter={nameFilter}
-            onNameFilterChange={setNameFilter} //ova 2 su zajedno
-            typeFilter={typeFilter}
-            onTypeFilterChange={(type) => {
-              setTypeFilter(type);
-              setPage(1);
-            }} //ova 2 su zajedno
-            userTypes={userTypes}
-          />
           {persons.length === 0 ? (
             <MessageBar messageBarType={MessageBarType.warning}>
               Ne postoji rezultat za zadate kriterijume pretrage.
