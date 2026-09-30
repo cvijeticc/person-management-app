@@ -20,9 +20,18 @@ import PersonForm from "./components/PersonForm";
 
 const API_URL = "http://localhost:3001/persons";
 
+// specijalni znaci u imenu (npr. "(") ne smeju da se tumace kao regex
+function escapeRegex(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function App() {
   const [persons, setPersons] = useState([]);
+  // sve osobe, potrebne samo da bi se izvukli tipovi korisnika za dropdown
+  const [allPersons, setAllPersons] = useState([]);
   const [nameFilter, setNameFilter] = useState("");
+  // ime koje se stvarno salje serveru, azurira se tek 500ms nakon poslednjeg kucanja
+  const [debouncedName, setDebouncedName] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -30,21 +39,47 @@ function App() {
   const [selectedRow, setSelectedRow] = useState(null);
 
   useEffect(() => {
-    loadPersons();
+    // ako korisnik ukuca novo slovo pre isteka 500ms, cleanup otkazuje prethodni timer
+    const timer = setTimeout(() => {
+      setDebouncedName(nameFilter);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [nameFilter]);
+
+  useEffect(() => {
+    loadAllPersons();
   }, []);
-  //ove prazne uglaste zagrade na kraju govore reactu da se ovo pokrece jednom posle
-  //prvog rendera i nikad vise
+
+  useEffect(() => {
+    loadPersons();
+  }, [debouncedName, typeFilter]);
+  //ucitavanje se pokrece na prvom renderu i svaki put kad se promeni ime (posle 500ms) ili tip
+
+  function loadAllPersons() {
+    axios.get(API_URL).then((response) => {
+      setAllPersons(response.data);
+    });
+  }
 
   function loadPersons() {
-    // fetch(API_URL)
+    // fetch(API_URL + "?name_like=^" + debouncedName + "&userType=" + typeFilter)
     //   .then((response) => response.json())
     //   .then((data) => {
     //     setPersons(data);
     //   });
 
-    axios.get(API_URL).then((response) => {
-      setPersons(response.data);
-    });
+    // ime i tip filtriraju se na serveru
+    // name_like je regex pa "^" znaci da ime pocinje tim slovima
+    axios
+      .get(API_URL, {
+        params: {
+          name_like: debouncedName ? "^" + escapeRegex(debouncedName) : undefined,
+          userType: typeFilter || undefined,
+        },
+      })
+      .then((response) => {
+        setPersons(response.data);
+      });
   }
 
   function openNewForm() {
@@ -67,11 +102,13 @@ function App() {
       axios.put(API_URL + "/" + selectedPerson.id, formData).then(() => {
         closeForm();
         loadPersons();
+        loadAllPersons();
       });
     } else {
       axios.post(API_URL, formData).then(() => {
         closeForm();
         loadPersons();
+        loadAllPersons();
       });
     }
   }
@@ -79,6 +116,7 @@ function App() {
   function deletePerson(id) {
     axios.delete(API_URL + "/" + id).then(() => {
       loadPersons();
+      loadAllPersons();
     });
   }
 
@@ -102,18 +140,10 @@ function App() {
   // tipovi korisnika se ne kucaju rucno, nego se izvlace iz liste osoba
   // Set cuva samo jedinstvene vrednosti pa ne mora da se proverava da li tip vec postoji
   const userTypesSet = new Set();
-  persons.forEach((person) => {
+  allPersons.forEach((person) => {
     userTypesSet.add(person.userType);
   });
   const userTypes = [...userTypesSet];
-
-  const filteredPersons = persons.filter((person) => {
-    const imeOdgovara = person.name
-      .toLowerCase()
-      .startsWith(nameFilter.toLowerCase());
-    const tipOdgovara = typeFilter === "" || person.userType === typeFilter;
-    return imeOdgovara && tipOdgovara;
-  });
 
   return (
     <div className="app">
@@ -156,18 +186,18 @@ function App() {
             onTypeFilterChange={setTypeFilter} //ova 2 su zajedno
             userTypes={userTypes}
           />
-          {filteredPersons.length === 0 ? (
+          {persons.length === 0 ? (
             <MessageBar messageBarType={MessageBarType.warning}>
               Ne postoji rezultat za zadate kriterijume pretrage.
             </MessageBar>
           ) : (
             <Text variant="small" block styles={{ root: { margin: "15px 0" } }}>
-              Broj prikazanih osoba: {filteredPersons.length}
+              Broj prikazanih osoba: {persons.length}
             </Text>
           )}
-          {filteredPersons.length > 0 && (
+          {persons.length > 0 && (
             <PersonTable
-              persons={filteredPersons}
+              persons={persons}
               onSelectionChange={setSelectedRow}
             />
           )}
