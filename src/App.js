@@ -30,7 +30,11 @@ function App() {
   //prvog rendera i nikad vise
 
   function loadPersons() {
-    // fetch(API_URL).then(response => response.json()).then(data => setPersons(data));
+    // fetch(API_URL)
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     setPersons(data);
+    //   });
 
     axios.get(API_URL).then((response) => {
       setPersons(response.data);
