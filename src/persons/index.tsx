@@ -158,16 +158,16 @@ function Persons() {
 
   return (
     <>
-      <Text variant="xLargePlus" block>
-        Osobe
-      </Text>
-      {/* sve u jednom redu: Nova osoba, Filteri, filteri (kad su otvoreni), Izmeni i Obrisi (kad je red selektovan) */}
+      {/* sve u jednom redu: naslov, Nova osoba, Filteri, filteri (kad su otvoreni), Izmeni i Obrisi (kad je red selektovan) */}
       <Stack
         horizontal
-        verticalAlign="end"
-        tokens={{ childrenGap: 15 }}
-        styles={{ root: { margin: "15px 0" } }}
+        verticalAlign="center"
+        tokens={{ childrenGap: 10 }}
+        styles={{ root: { margin: "0 0 10px 0" } }}
       >
+        <Text variant="xLargePlus" styles={{ root: { marginRight: 10 } }}>
+          Osobe
+        </Text>
         <PrimaryButton
           text="Nova osoba"
           iconProps={{ iconName: "Add" }}
@@ -208,7 +208,7 @@ function Persons() {
           Ne postoji rezultat za zadate kriterijume pretrage.
         </MessageBar>
       ) : (
-        <Text variant="small" block styles={{ root: { margin: "15px 0" } }}>
+        <Text variant="small" block styles={{ root: { margin: "0 0 10px 0" } }}>
           Broj prikazanih osoba: od {(page - 1) * PAGE_SIZE + 1} do{" "}
           {(page - 1) * PAGE_SIZE + persons.length}
         </Text>

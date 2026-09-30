@@ -34,10 +34,18 @@ const navStyles = (props) => ({
   },
 });
 
-function Navigation() {
+function Navigation({ selectedKey, onLinkClick }) {
   return (
     <div className="navigation">
-      <Nav groups={navGroups} selectedKey="osobe" styles={navStyles} />
+      <Nav
+        groups={navGroups}
+        selectedKey={selectedKey}
+        onLinkClick={(event, link) => {
+          event.preventDefault(); // linkovi nemaju pravi url pa ne treba da se stranica osvezava
+          onLinkClick(link.key);
+        }}
+        styles={navStyles}
+      />
     </div>
   );
 }

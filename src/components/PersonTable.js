@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   DetailsList,
   SelectionMode,
@@ -38,8 +38,8 @@ const columns = [
     key: "address",
     name: "Adresa",
     fieldName: "address",
-    minWidth: 130,
-    maxWidth: 180,
+    minWidth: 115,
+    maxWidth: 165,
   },
 ];
 
@@ -79,8 +79,32 @@ function PersonTable({
     );
   }
 
+  // klik na vec selektovan red ga odselektuje
+  // Fluent selektuje red vec na pritisak misa (mousedown), zato se pamti da li je red
+  // bio selektovan pre pritiska, pa ako jeste odselektuje se kad se klik zavrsi
+  const wasSelected = useRef(false);
+
+  function renderRow(props, defaultRender) {
+    const index = props.itemIndex;
+    return (
+      <div
+        onMouseDownCapture={() => {
+          wasSelected.current = selection.isIndexSelected(index);
+        }}
+        onClick={() => {
+          if (wasSelected.current) {
+            wasSelected.current = false;
+            setTimeout(() => selection.setIndexSelected(index, false, false), 0);
+          }
+        }}
+      >
+        {defaultRender(props)}
+      </div>
+    );
+  }
+
   return (
-    <ScrollablePane>
+    <ScrollablePane styles={{ contentContainer: { overflowX: "hidden" } }}>
       <DetailsList
         items={persons}
         columns={sortableColumns}
@@ -88,6 +112,8 @@ function PersonTable({
         selection={selection}
         selectionMode={SelectionMode.single}
         onRenderDetailsHeader={renderHeader}
+        onRenderRow={renderRow}
+        styles={{ root: { overflowX: "hidden" } }} // i sama lista ima svoj horizontalni skrol
       />
     </ScrollablePane>
   );

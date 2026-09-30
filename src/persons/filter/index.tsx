@@ -22,20 +22,20 @@ function Filters({
   ];
 
   return (
-    <Stack horizontal tokens={{ childrenGap: 15 }}>
+    <Stack horizontal tokens={{ childrenGap: 10 }}>
       <TextField
-        label="Pretraga po imenu"
+        placeholder="Pretraga po imenu"
         value={nameFilter}
         onChange={(event, newValue) => onNameFilterChange(newValue || "")} //kada se upise neko slovo
         //u textfield onda se prvo poziva ova linija koda i onda newValue postaje to slovo
-        styles={{ root: { width: 220 } }}
+        styles={{ root: { width: 170 } }}
       />
       <Dropdown
-        label="Tip korisnika"
+        ariaLabel="Tip korisnika"
         selectedKey={typeFilter}
         options={options}
         onChange={(event, option) => onTypeFilterChange(String(option?.key))}
-        styles={{ root: { width: 220 } }}
+        styles={{ root: { width: 150 } }}
       />
     </Stack>
   );
