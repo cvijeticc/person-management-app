@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Stack,
   PrimaryButton,
@@ -30,13 +30,15 @@ function App() {
   //prvog rendera i nikad vise
 
   function loadPersons() {
+    // fetch(API_URL).then(response => response.json()).then(data => setPersons(data));
+
     axios.get(API_URL).then((response) => {
       setPersons(response.data);
     });
   }
 
   function openNewForm() {
-    setSelectedPerson(null);
+    // setSelectedPerson(null);
     setIsFormOpen(true);
   }
 
@@ -72,6 +74,8 @@ function App() {
     }
   }
 
+  // const userTypes = useMemo(() => {}, [persons])
+
   // tipovi korisnika se ne kucaju rucno, nego se izvlace iz liste osoba
   const userTypes = [];
   persons.forEach((person) => {
@@ -93,9 +97,9 @@ function App() {
   return (
     <div className="app">
       <Header />
-      <Stack horizontal styles={{ root: { flexGrow: 1 } }}>
+      <Stack horizontal grow={true}>
         <Navigation />
-        <Stack.Item grow className="content">
+        <Stack.Item grow styles={{ root: { padding: "20px" } }}>
           <Text variant="xLargePlus" block>
             Osobe
           </Text>
