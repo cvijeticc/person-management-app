@@ -1,12 +1,20 @@
 import { Stack, TextField, Dropdown } from "@fluentui/react";
 
+interface FiltersProps {
+  nameFilter: string;
+  onNameFilterChange: (name: string) => void;
+  typeFilter: string;
+  onTypeFilterChange: (type: string) => void;
+  userTypes: string[];
+}
+
 function Filters({
   nameFilter,
   onNameFilterChange,
   typeFilter,
   onTypeFilterChange,
   userTypes,
-}) {
+}: FiltersProps) {
   // Dropdown ocekuje niz objekata sa key i text
   const options = [
     { key: "", text: "Svi tipovi" },
@@ -26,7 +34,7 @@ function Filters({
         label="Tip korisnika"
         selectedKey={typeFilter}
         options={options}
-        onChange={(event, option) => onTypeFilterChange(option.key)}
+        onChange={(event, option) => onTypeFilterChange(String(option?.key))}
         styles={{ root: { width: 220 } }}
       />
     </Stack>
