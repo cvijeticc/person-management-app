@@ -4,8 +4,8 @@
 .app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  overflow-x: hidden;
+  height: 100vh;
+  overflow: hidden; /* cela stranica je fiksirana, skroluje se samo tabela */
 }
 
 .header {
@@ -19,6 +19,21 @@
   padding-top: 20px;
 }
 
+.main {
+  flex: 1;
+  min-height: 0;
+}
+
 .content {
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* prostor koji tabela zauzima, unutra je ScrollablePane koji skroluje redove */
+.table-container {
+  position: relative;
+  flex: 1;
+  min-height: 0;
 }

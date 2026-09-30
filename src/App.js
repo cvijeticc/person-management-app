@@ -182,9 +182,9 @@ function App() {
   return (
     <div className="app">
       <Header />
-      <Stack horizontal grow={true}>
+      <Stack horizontal grow={true} className="main">
         <Navigation />
-        <Stack.Item grow styles={{ root: { padding: "20px" } }}>
+        <Stack.Item grow className="content" styles={{ root: { padding: "20px" } }}>
           <Text variant="xLargePlus" block>
             Osobe
           </Text>
@@ -241,13 +241,15 @@ function App() {
             </Text>
           )}
           {persons.length > 0 && (
-            <PersonTable
-              persons={persons}
-              onSelectionChange={setSelectedRow}
-              sortField={sortField}
-              sortDescending={sortDescending}
-              onSort={sortBy}
-            />
+            <div className="table-container">
+              <PersonTable
+                persons={persons}
+                onSelectionChange={setSelectedRow}
+                sortField={sortField}
+                sortDescending={sortDescending}
+                onSort={sortBy}
+              />
+            </div>
           )}
           <Dialog
             hidden={personToDelete === null}

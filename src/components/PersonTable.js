@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { DetailsList, SelectionMode, Selection } from "@fluentui/react";
+import {
+  DetailsList,
+  SelectionMode,
+  Selection,
+  ScrollablePane,
+  Sticky,
+  StickyPositionType,
+} from "@fluentui/react";
 
 // DetailsList ne cita polja sam - mora mu se opisati svaka kolona
 const columns = [
@@ -63,14 +70,26 @@ function PersonTable({
     onColumnClick: () => onSort(column.key),
   }));
 
+  // zaglavlje tabele ostaje na vrhu dok se redovi skroluju
+  function renderHeader(props, defaultRender) {
+    return (
+      <Sticky stickyPosition={StickyPositionType.Header} isScrollSynced>
+        {defaultRender(props)}
+      </Sticky>
+    );
+  }
+
   return (
-    <DetailsList
-      items={persons}
-      columns={sortableColumns}
-      getKey={(person) => person.id}
-      selection={selection}
-      selectionMode={SelectionMode.single}
-    />
+    <ScrollablePane>
+      <DetailsList
+        items={persons}
+        columns={sortableColumns}
+        getKey={(person) => person.id}
+        selection={selection}
+        selectionMode={SelectionMode.single}
+        onRenderDetailsHeader={renderHeader}
+      />
+    </ScrollablePane>
   );
 }
 
