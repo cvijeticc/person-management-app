@@ -77,14 +77,12 @@ function App() {
   // const userTypes = useMemo(() => {}, [persons])
 
   // tipovi korisnika se ne kucaju rucno, nego se izvlace iz liste osoba
-  const userTypes = [];
+  // Set cuva samo jedinstvene vrednosti pa ne mora da se proverava da li tip vec postoji
+  const userTypesSet = new Set();
   persons.forEach((person) => {
-    //prodje se kroz celu listu osoba i za svaku osobu se proveri da li je njen tip vec u listi tipova
-    if (!userTypes.includes(person.userType)) {
-      //ako ne postoji onda se doda u listu tipova
-      userTypes.push(person.userType);
-    }
+    userTypesSet.add(person.userType);
   });
+  const userTypes = [...userTypesSet];
 
   const filteredPersons = persons.filter((person) => {
     const imeOdgovara = person.name
