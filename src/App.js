@@ -27,6 +27,7 @@ function App() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [personToDelete, setPersonToDelete] = useState(null);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   useEffect(() => {
     loadPersons();
@@ -84,6 +85,7 @@ function App() {
   function confirmDelete() {
     deletePerson(personToDelete);
     setPersonToDelete(null);
+    setSelectedRow(null);
   }
 
   // isto ovo ali sa useMemo, racuna se samo kad se promeni lista osoba
@@ -122,12 +124,31 @@ function App() {
           <Text variant="xLargePlus" block>
             Osobe
           </Text>
-          <PrimaryButton
-            text="Nova osoba"
-            iconProps={{ iconName: "Add" }}
-            onClick={openNewForm}
+          <Stack
+            horizontal
+            horizontalAlign="space-between"
+            verticalAlign="center"
             styles={{ root: { margin: "15px 0" } }}
-          />
+          >
+            <PrimaryButton
+              text="Nova osoba"
+              iconProps={{ iconName: "Add" }}
+              onClick={openNewForm}
+            />
+            {/* dugmad se pojavljuju tek kad je neki red selektovan */}
+            {selectedRow && (
+              <Stack horizontal tokens={{ childrenGap: 8 }}>
+                <DefaultButton
+                  text="Izmeni"
+                  onClick={() => openEditForm(selectedRow)}
+                />
+                <DefaultButton
+                  text="Obrisi"
+                  onClick={() => setPersonToDelete(selectedRow.id)}
+                />
+              </Stack>
+            )}
+          </Stack>
           <Filters
             nameFilter={nameFilter}
             onNameFilterChange={setNameFilter} //ova 2 su zajedno
@@ -147,8 +168,7 @@ function App() {
           {filteredPersons.length > 0 && (
             <PersonTable
               persons={filteredPersons}
-              onEdit={openEditForm}
-              onDelete={setPersonToDelete}
+              onSelectionChange={setSelectedRow}
             />
           )}
           <Dialog

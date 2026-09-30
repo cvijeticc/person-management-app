@@ -1,9 +1,5 @@
-import {
-  DetailsList,
-  SelectionMode,
-  DefaultButton,
-  Stack,
-} from "@fluentui/react";
+import { useState } from "react";
+import { DetailsList, SelectionMode, Selection } from "@fluentui/react";
 
 // DetailsList ne cita polja sam - mora mu se opisati svaka kolona
 const columns = [
@@ -38,32 +34,28 @@ const columns = [
     minWidth: 130,
     maxWidth: 180,
   },
-  { key: "actions", name: "Akcije", minWidth: 220 },
 ];
 
-function PersonTable({ persons, onEdit, onDelete }) {
+function PersonTable({ persons, onSelectionChange }) {
   //ovde se prima props iz App.js
-  // poziva se za svaku celiju - za kolonu "actions" vracamo dugmad,
-  // a za sve ostale obicnu vrednost iz objekta
-  function renderItemColumn(person, index, column) {
-    if (column.key === "actions") {
-      return (
-        <Stack horizontal tokens={{ childrenGap: 8 }}>
-          <DefaultButton text="Izmeni" onClick={() => onEdit(person)} />
-          <DefaultButton text="Obrisi" onClick={() => onDelete(person.id)} />
-        </Stack>
-      );
-    }
-    return person[column.fieldName];
-  }
+  // Selection pamti koji je red selektovan, a kad se selekcija promeni
+  // javlja se App.js-u koja je osoba selektovana (ili null ako nije nijedna)
+  const [selection] = useState(
+    () =>
+      new Selection({
+        onSelectionChanged: () => {
+          onSelectionChange(selection.getSelection()[0] || null);
+        },
+      }),
+  );
 
   return (
     <DetailsList
       items={persons}
       columns={columns}
       getKey={(person) => person.id}
-      selectionMode={SelectionMode.none}
-      onRenderItemColumn={renderItemColumn}
+      selection={selection}
+      selectionMode={SelectionMode.single}
     />
   );
 }
