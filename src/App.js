@@ -2,6 +2,10 @@ import { useState, useEffect, useMemo } from "react";
 import {
   Stack,
   PrimaryButton,
+  DefaultButton,
+  Dialog,
+  DialogType,
+  DialogFooter,
   MessageBar,
   MessageBarType,
   Text,
@@ -22,6 +26,7 @@ function App() {
   const [typeFilter, setTypeFilter] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
+  const [personToDelete, setPersonToDelete] = useState(null);
 
   useEffect(() => {
     loadPersons();
@@ -71,11 +76,14 @@ function App() {
   }
 
   function deletePerson(id) {
-    if (window.confirm("Da li ste sigurni da zelite da obrisete ovu osobu?")) {
-      axios.delete(API_URL + "/" + id).then(() => {
-        loadPersons();
-      });
-    }
+    axios.delete(API_URL + "/" + id).then(() => {
+      loadPersons();
+    });
+  }
+
+  function confirmDelete() {
+    deletePerson(personToDelete);
+    setPersonToDelete(null);
   }
 
   // const userTypes = useMemo(() => {}, [persons])
@@ -131,9 +139,27 @@ function App() {
             <PersonTable
               persons={filteredPersons}
               onEdit={openEditForm}
-              onDelete={deletePerson}
+              onDelete={setPersonToDelete}
             />
           )}
+          <Dialog
+            hidden={personToDelete === null}
+            onDismiss={() => setPersonToDelete(null)}
+            dialogContentProps={{
+              type: DialogType.normal,
+              title: "Brisanje osobe",
+              subText: "Da li ste sigurni da zelite da obrisete ovu osobu?",
+            }}
+          >
+            <DialogFooter>
+              <PrimaryButton text="Da" onClick={confirmDelete} />
+              <DefaultButton text="Ne" onClick={() => setPersonToDelete(null)} />
+              <DefaultButton
+                text="Otkazi"
+                onClick={() => setPersonToDelete(null)}
+              />
+            </DialogFooter>
+          </Dialog>
           {isFormOpen && (
             <PersonForm
               person={selectedPerson}
