@@ -86,7 +86,16 @@ function App() {
     setPersonToDelete(null);
   }
 
-  // const userTypes = useMemo(() => {}, [persons])
+  // isto ovo ali sa useMemo, racuna se samo kad se promeni lista osoba
+  // const userTypes = useMemo(() => {
+  //   const types = [];
+  //   persons.forEach((person) => {
+  //     if (!types.includes(person.userType)) {
+  //       types.push(person.userType);
+  //     }
+  //   });
+  //   return types;
+  // }, [persons]);
 
   // tipovi korisnika se ne kucaju rucno, nego se izvlace iz liste osoba
   // Set cuva samo jedinstvene vrednosti pa ne mora da se proverava da li tip vec postoji
