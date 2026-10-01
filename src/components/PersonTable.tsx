@@ -6,10 +6,15 @@ import {
   ScrollablePane,
   Sticky,
   StickyPositionType,
+  IColumn,
+  IDetailsListProps,
+  IDetailsHeaderProps,
+  IRenderFunction,
 } from "@fluentui/react";
+import { Person } from "../persons/api/types";
 
 // DetailsList ne cita polja sam - mora mu se opisati svaka kolona
-const columns = [
+const columns: IColumn[] = [
   { key: "id", name: "Id", fieldName: "id", minWidth: 25, maxWidth: 35 },
   { key: "name", name: "Ime", fieldName: "name", minWidth: 70, maxWidth: 100 },
   {
@@ -43,13 +48,21 @@ const columns = [
   },
 ];
 
+interface PersonTableProps {
+  persons: Person[];
+  onSelectionChange: (person: Person | null) => void;
+  sortField: string;
+  sortDescending: boolean;
+  onSort: (field: string) => void;
+}
+
 function PersonTable({
   persons,
   onSelectionChange,
   sortField,
   sortDescending,
   onSort,
-}) {
+}: PersonTableProps) {
   //ovde se prima props iz App.js
   // Selection pamti koji je red selektovan, a kad se selekcija promeni
   // javlja se App.js-u koja je osoba selektovana (ili null ako nije nijedna)
@@ -57,7 +70,8 @@ function PersonTable({
     () =>
       new Selection({
         onSelectionChanged: () => {
-          onSelectionChange(selection.getSelection()[0] || null);
+          // Selection vraca opste objekte pa se kaze TypeScript-u da je to Person
+          onSelectionChange((selection.getSelection()[0] as Person) || null);
         },
       }),
   );
@@ -71,7 +85,13 @@ function PersonTable({
   }));
 
   // zaglavlje tabele ostaje na vrhu dok se redovi skroluju
-  function renderHeader(props, defaultRender) {
+  const renderHeader: IRenderFunction<IDetailsHeaderProps> = (
+    props,
+    defaultRender
+  ) => {
+    if (!props || !defaultRender) {
+      return null;
+    }
     return (
       <Sticky stickyPosition={StickyPositionType.Header} isScrollSynced>
         {defaultRender(props)}
@@ -82,9 +102,12 @@ function PersonTable({
   // klik na vec selektovan red ga odselektuje
   // Fluent selektuje red vec na pritisak misa (mousedown), zato se pamti da li je red
   // bio selektovan pre pritiska, pa ako jeste odselektuje se kad se klik zavrsi
-  const wasSelected = useRef(false);
+  const wasSelected = useRef<boolean>(false);
 
-  function renderRow(props, defaultRender) {
+  const renderRow: IDetailsListProps["onRenderRow"] = (props, defaultRender) => {
+    if (!props || !defaultRender) {
+      return null;
+    }
     const index = props.itemIndex;
     return (
       <div

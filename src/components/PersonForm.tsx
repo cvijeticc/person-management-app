@@ -9,9 +9,16 @@ import {
   MessageBar,
   MessageBarType,
 } from '@fluentui/react';
+import { Person, PersonFormData } from '../persons/api/types';
 
-function PersonForm({ person, onSave, onCancel }) {
-  const [formData, setFormData] = useState({
+interface PersonFormProps {
+  person: Person | null;
+  onSave: (formData: PersonFormData) => void;
+  onCancel: () => void;
+}
+
+function PersonForm({ person, onSave, onCancel }: PersonFormProps) {
+  const [formData, setFormData] = useState<PersonFormData>({
     name: person ? person.name : '',
     surname: person ? person.surname : '',
     userType: person ? person.userType : '',
@@ -21,7 +28,7 @@ function PersonForm({ person, onSave, onCancel }) {
   });
   const [error, setError] = useState('');
 
-  function handleChange(field, newValue) {
+  function handleChange(field: keyof PersonFormData, newValue?: string) {
     setFormData({ ...formData, [field]: newValue || '' });
   }
 
