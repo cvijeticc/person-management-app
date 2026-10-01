@@ -1,4 +1,4 @@
-import { Nav } from "@fluentui/react";
+import { Nav, INavStyleProps, INavStyles, INavLink } from "@fluentui/react";
 
 // linkovi se Nav komponenti prosledjuju kao niz grupa
 const navGroups = [
@@ -12,7 +12,7 @@ const navGroups = [
 ];
 
 // styles je funkcija da bi se moglo pitati da li je link trenutno aktivan
-const navStyles = (props) => ({
+const navStyles = (props: INavStyleProps): Partial<INavStyles> => ({
   link: {
     backgroundColor: props.isSelected ? "#2c3e50" : "transparent",
     borderLeft: props.isSelected
@@ -34,15 +34,22 @@ const navStyles = (props) => ({
   },
 });
 
-function Navigation({ selectedKey, onLinkClick }) {
+interface NavigationProps {
+  selectedKey: string;
+  onLinkClick: (key: string) => void;
+}
+
+function Navigation({ selectedKey, onLinkClick }: NavigationProps) {
   return (
     <div className="navigation">
       <Nav
         groups={navGroups}
         selectedKey={selectedKey}
-        onLinkClick={(event, link) => {
-          event.preventDefault(); // linkovi nemaju pravi url pa ne treba da se stranica osvezava
-          onLinkClick(link.key);
+        onLinkClick={(event?: React.MouseEvent, link?: INavLink) => {
+          event?.preventDefault(); // linkovi nemaju pravi url pa ne treba da se stranica osvezava
+          if (link?.key) {
+            onLinkClick(link.key);
+          }
         }}
         styles={navStyles}
       />

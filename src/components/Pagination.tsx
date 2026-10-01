@@ -1,8 +1,14 @@
 import { Stack, DefaultButton, PrimaryButton } from "@fluentui/react";
 
-function Pagination({ page, totalPages, onPageChange }) {
+interface PaginationProps {
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
+function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
   // pravi niz brojeva strana: [1, 2, 3, ...]
-  const pages = [];
+  const pages: number[] = [];
   for (let i = 1; i <= totalPages; i++) {
     pages.push(i);
   }
@@ -16,11 +22,11 @@ function Pagination({ page, totalPages, onPageChange }) {
       {pages.map((number) =>
         // trenutna strana je istaknuta
         number === page ? (
-          <PrimaryButton key={number} text={number} />
+          <PrimaryButton key={number} text={String(number)} />
         ) : (
           <DefaultButton
             key={number}
-            text={number}
+            text={String(number)}
             onClick={() => onPageChange(number)}
           />
         ),
