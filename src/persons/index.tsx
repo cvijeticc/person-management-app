@@ -36,9 +36,9 @@ function Persons() {
   const [debouncedName, setDebouncedName] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [personToEdit, setPersonToEdit] = useState<Person | null>(null);
   const [personToDelete, setPersonToDelete] = useState<number | null>(null);
-  const [selectedRow, setSelectedRow] = useState<Person | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [sortField, setSortField] = useState("");
   const [sortDescending, setSortDescending] = useState(false);
@@ -96,23 +96,23 @@ function Persons() {
   }
 
   function openNewForm() {
-    // setSelectedPerson(null);
+    // setPersonToEdit(null);
     setIsFormOpen(true);
   }
 
   function openEditForm(person: Person) {
-    setSelectedPerson(person);
+    setPersonToEdit(person);
     setIsFormOpen(true);
   }
 
   function closeForm() {
     setIsFormOpen(false);
-    setSelectedPerson(null);
+    setPersonToEdit(null);
   }
 
   function savePerson(formData: PersonFormData) {
-    if (selectedPerson) {
-      updatePerson(selectedPerson.id, formData).then(() => {
+    if (personToEdit) {
+      updatePerson(personToEdit.id, formData).then(() => {
         closeForm();
         loadPersons();
         loadAllPersons();
@@ -134,7 +134,7 @@ function Persons() {
       });
     }
     setPersonToDelete(null);
-    setSelectedRow(null);
+    setSelectedPerson(null);
   }
 
   // isto ovo ali sa useMemo, racuna se samo kad se promeni lista osoba
@@ -190,16 +190,16 @@ function Persons() {
             userTypes={userTypes}
           />
         )}
-        {selectedRow && (
+        {selectedPerson && (
           <DefaultButton
             text="Izmeni"
-            onClick={() => openEditForm(selectedRow)}
+            onClick={() => openEditForm(selectedPerson)}
           />
         )}
-        {selectedRow && (
+        {selectedPerson && (
           <DefaultButton
             text="Obrisi"
-            onClick={() => setPersonToDelete(selectedRow.id)}
+            onClick={() => setPersonToDelete(selectedPerson.id)}
           />
         )}
       </Stack>
@@ -217,7 +217,7 @@ function Persons() {
         <div className="table-container">
           <PersonTable
             persons={persons}
-            onSelectionChange={setSelectedRow}
+            onSelectionChange={setSelectedPerson}
             sortField={sortField}
             sortDescending={sortDescending}
             onSort={sortBy}
@@ -249,7 +249,7 @@ function Persons() {
       />
       {isFormOpen && (
         <PersonForm
-          person={selectedPerson}
+          person={personToEdit}
           onSave={savePerson}
           onCancel={closeForm}
         />
