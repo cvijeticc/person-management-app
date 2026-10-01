@@ -7,7 +7,7 @@ import App from "./App";
 // mora se pozvati jednom, inace Fluent komponente nemaju ikonice
 initializeIcons();
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
     <ThemeProvider>

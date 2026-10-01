@@ -7,7 +7,7 @@ import Persons from "./persons";
 
 function App() {
   // koja stranica je trenutno otvorena: osobe, izvestaji ili podesavanja
-  const [currentPage, setCurrentPage] = useState("osobe");
+  const [currentPage, setCurrentPage] = useState<string>("osobe");
 
   return (
     <div className="app">
