@@ -1,4 +1,4 @@
-export interface Person {
+export type Person = {
   id: number;
   name: string;
   surname: string;
@@ -6,22 +6,27 @@ export interface Person {
   createdDate: string;
   city: string;
   address: string;
-}
+};
 
-// podaci iz forme, id dodeljuje server
-export type PersonFormData = Omit<Person, "id">;
-
-// sta se salje serveru kad se traze osobe
-export interface PersonsQuery {
+export type PersonKreiranjeCmd = {
   name: string;
+  surname: string;
   userType: string;
-  sortField: string;
-  sortDescending: boolean;
-  page: number;
-  pageSize: number;
-}
+  createdDate: string;
+  city: string;
+  address: string;
+};
 
-export interface PersonsResponse {
-  persons: Person[];
-  totalCount: number;
-}
+// Primeri tipova podataka:
+
+export type PersonCriteria = {
+  // TODO: Dodaj po cemu pretrazujes
+};
+
+export type PersonOrder = {
+  // TODO: Dodaj po cemu vrsis order
+};
+
+export type PersonAzuriranjeCmd = {
+  // TODO: Dodaj polja za azuriranje
+};

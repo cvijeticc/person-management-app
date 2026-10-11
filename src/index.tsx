@@ -1,16 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { ThemeProvider, initializeIcons } from "@fluentui/react";
-import "./index.css";
-import App from "./App";
+import { defaultTheme } from "./common/theme";
+import { App } from "./router";
 
-// mora se pozvati jednom, inace Fluent komponente nemaju ikonice
 initializeIcons();
 
-const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement,
+);
+
 root.render(
   <React.StrictMode>
-    <ThemeProvider>
+    <ThemeProvider
+      style={{ backgroundColor: "transparent", height: "100%" }}
+      theme={defaultTheme}
+    >
       <App />
     </ThemeProvider>
   </React.StrictMode>,
