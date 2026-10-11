@@ -1,44 +1,57 @@
-import { Stack, TextField, Dropdown } from "@fluentui/react";
+import { Stack, TextField, Dropdown, IDropdownOption } from "@fluentui/react";
+import * as Api from "../api";
 
-interface FiltersProps {
-  nameFilter: string;
-  onNameFilterChange: (name: string) => void;
-  typeFilter: string;
-  onTypeFilterChange: (type: string) => void;
-  userTypes: string[];
-}
+export const getUserType = (data: Api.Person[]): IDropdownOption[] => {
+  const set = new Set(data.map((user) => user.userType));
+  return Array.from(set).map((value) => ({
+    key: value.toLowerCase(),
+    text: value,
+  }));
+};
 
-function Filters({
-  nameFilter,
-  onNameFilterChange,
-  typeFilter,
-  onTypeFilterChange,
+export type FilterState = {
+  isVisible: boolean;
+  selectedUserType: string | null;
+  userName: string;
+  userTypes: IDropdownOption[];
+};
+
+export type Props = FilterState & {
+  onChangeUserType: (key: string | null) => void;
+  onChangeUserName: (value: string) => void;
+};
+
+const Filter: React.FC<Props> = ({
+  isVisible,
+  selectedUserType,
   userTypes,
-}: FiltersProps) {
-  // Dropdown ocekuje niz objekata sa key i text
-  const options = [
-    { key: "", text: "Svi tipovi" },
-    ...userTypes.map((type) => ({ key: type, text: type })),
-  ];
+  userName,
+  onChangeUserType,
+  onChangeUserName,
+}) => {
+  if (!isVisible) return null;
 
   return (
-    <Stack horizontal tokens={{ childrenGap: 10 }}>
+    <Stack horizontal={true} tokens={{ childrenGap: 10 }}>
       <TextField
-        placeholder="Pretraga po imenu"
-        value={nameFilter}
-        onChange={(event, newValue) => onNameFilterChange(newValue || "")} //kada se upise neko slovo
-        //u textfield onda se prvo poziva ova linija koda i onda newValue postaje to slovo
-        styles={{ root: { width: 170 } }}
+        label="Ime"
+        placeholder="Unesite ime..."
+        value={userName}
+        onChange={(_, newValue) => onChangeUserName(newValue || "")}
       />
       <Dropdown
-        ariaLabel="Tip korisnika"
-        selectedKey={typeFilter}
-        options={options}
-        onChange={(event, option) => onTypeFilterChange(String(option?.key))}
-        styles={{ root: { width: 150 } }}
+        label="Tip korisnika"
+        placeholder="Odaberi tip korisnika..."
+        selectedKey={selectedUserType}
+        options={userTypes}
+        onChange={(_, option) => {
+          if (!option) return onChangeUserType(null);
+          return onChangeUserType(String(option.key));
+        }}
+        styles={{ root: { width: 250 } }}
       />
     </Stack>
   );
-}
+};
 
-export default Filters;
+export default Filter;

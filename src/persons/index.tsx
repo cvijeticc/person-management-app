@@ -1,261 +1,276 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
-  Stack,
-  PrimaryButton,
+  Text,
   DefaultButton,
-  Dialog,
-  DialogType,
-  DialogFooter,
+  Stack,
+  Spinner,
+  SpinnerSize,
   MessageBar,
   MessageBarType,
-  Text,
 } from "@fluentui/react";
-import PersonTable from "../components/PersonTable";
-import PersonForm from "../components/PersonForm";
-import Pagination from "../components/Pagination";
-import Filters from "./filter";
-import {
-  getPersons,
-  getAllPersons,
-  createPerson,
-  updatePerson,
-  deletePerson,
-} from "./api";
-import { Person, PersonFormData } from "./api/types";
+import Filter, { getUserType, FilterState } from "./filter";
+import Kreiranje, { KreiranjeState } from "./kreiranje";
+import Azuriranje, { AzuriranjeState } from "./azuriranje";
+import Table, { Column } from "../common/components/Table";
+import * as Api from "./api";
 
-const PAGE_SIZE = 10;
+// TODO: Razmisli o useReducer?
 
-function Persons() {
-  const [persons, setPersons] = useState<Person[]>([]);
-  // sve osobe, potrebne samo da bi se izvukli tipovi korisnika za dropdown
-  const [allPersons, setAllPersons] = useState<Person[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const [nameFilter, setNameFilter] = useState("");
-  // ime koje se stvarno salje serveru, azurira se tek 500ms nakon poslednjeg kucanja
-  const [debouncedName, setDebouncedName] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [personToEdit, setPersonToEdit] = useState<Person | null>(null);
-  const [personToDelete, setPersonToDelete] = useState<number | null>(null);
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
-  const [sortField, setSortField] = useState("");
-  const [sortDescending, setSortDescending] = useState(false);
+type Loading = { type: "Loading" };
+type Loaded = {
+  type: "Loaded";
+  data: Api.Person[];
+  filter: FilterState;
+  kreiranje: KreiranjeState;
+  azuriranje: AzuriranjeState;
+  selectedRow: Api.Person | null;
+};
+type Failed = { type: "Failed"; error: string };
+
+type State = Loading | Loaded | Failed;
+
+const INIT_LOADING_STATE: Loading = { type: "Loading" };
+
+const PersonsScreen: React.FC = () => {
+  const [state, setState] = useState<State>(INIT_LOADING_STATE);
 
   useEffect(() => {
-    // ako korisnik ukuca novo slovo pre isteka 500ms, cleanup otkazuje prethodni timer
-    const timer = setTimeout(() => {
-      setDebouncedName(nameFilter);
-      setPage(1);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [nameFilter]);
-
-  useEffect(() => {
-    loadAllPersons();
+    Api.getPersons().then((response) => {
+      switch (response.type) {
+        case "Success":
+          return setState({
+            type: "Loaded",
+            data: response.data,
+            kreiranje: { isVisible: false },
+            azuriranje: { isVisible: false, original: null },
+            selectedRow: null,
+            filter: {
+              isVisible: false,
+              selectedUserType: null,
+              userTypes: getUserType(response.data),
+              userName: "",
+            },
+          });
+        case "Failure":
+          return setState({ type: "Failed", error: response.error });
+      }
+    });
   }, []);
 
-  useEffect(() => {
-    loadPersons();
-  }, [debouncedName, typeFilter, page, sortField, sortDescending]);
-  //ucitavanje se pokrece na prvom renderu i svaki put kad se promeni ime (posle 500ms), tip, strana ili sortiranje
-
-  function loadAllPersons() {
-    getAllPersons().then(setAllPersons);
-  }
-
-  function loadPersons() {
-    getPersons({
-      name: debouncedName,
-      userType: typeFilter,
-      sortField,
-      sortDescending,
-      page,
-      pageSize: PAGE_SIZE,
-    }).then((result) => {
-      // ako je obrisana poslednja osoba sa poslednje strane vrati se na prethodnu
-      if (result.persons.length === 0 && page > 1) {
-        setPage(page - 1);
-        return;
+  const toggleFilter = () =>
+    setState((state) => {
+      if (state.type === "Loaded") {
+        return {
+          ...state,
+          filter: { ...state.filter, isVisible: !state.filter.isVisible },
+        };
       }
-      setPersons(result.persons);
-      setTotalCount(result.totalCount);
+      return state;
     });
-  }
 
-  // prvi klik na kolonu sortira rastuce (Id opadajuce), svaki sledeci klik na istu kolonu okrece smer
-  function sortBy(field: string) {
-    if (field === sortField) {
-      setSortDescending(!sortDescending);
-    } else {
-      setSortField(field);
-      setSortDescending(field === "id");
+  const onChangeUserType = (selectedUserType: string | null) => {
+    setState((state) => {
+      if (state.type === "Loaded")
+        return {
+          ...state,
+          filter: {
+            ...state.filter,
+            selectedUserType,
+          },
+        };
+      return state;
+    });
+  };
+
+  const onChangeUserName = (userName: string) => {
+    setState((state) => {
+      if (state.type === "Loaded")
+        return {
+          ...state,
+          filter: {
+            ...state.filter,
+            userName,
+          },
+        };
+      return state;
+    });
+  };
+
+  const onStartKreiranje = () => {
+    setState((state) => {
+      if (state.type === "Loaded") {
+        return {
+          ...state,
+          kreiranje: {
+            isVisible: true,
+          },
+        };
+      }
+      return state;
+    });
+  };
+
+  const onCancelKreiranje = () => {
+    setState((state) => {
+      if (state.type === "Loaded") {
+        return {
+          ...state,
+          kreiranje: {
+            isVisible: false,
+          },
+        };
+      }
+      return state;
+    });
+  };
+
+  const onStartAzuriranje = (person: Api.Person) => {
+    setState((state) => {
+      if (state.type === "Loaded") {
+        return {
+          ...state,
+          azuriranje: {
+            isVisible: true,
+            original: person,
+          },
+        };
+      }
+      return state;
+    });
+  };
+
+  const onCancelAzuriranje = () => {
+    setState((state) => {
+      if (state.type === "Loaded") {
+        return {
+          ...state,
+          azuriranje: {
+            isVisible: false,
+            original: null,
+          },
+        };
+      }
+      return state;
+    });
+  };
+
+  const filterPersons = (
+    data: Api.Person[],
+    filter: FilterState,
+  ): Api.Person[] =>
+    data.filter((person) => {
+      const matchesName = person.name
+        .toLowerCase()
+        .includes(filter.userName.toLowerCase());
+
+      const matchesUserType =
+        filter.selectedUserType === null ||
+        person.userType.toLowerCase() === filter.selectedUserType;
+
+      return matchesName && matchesUserType;
+    });
+
+  const columns: Column<Api.Person>[] = [
+    {
+      key: "name",
+      name: "Ime",
+      fieldName: "name",
+      minWidth: 70,
+      maxWidth: 100,
+    },
+    {
+      key: "surname",
+      name: "Prezime",
+      fieldName: "surname",
+      minWidth: 80,
+      maxWidth: 110,
+    },
+    {
+      key: "userType",
+      name: "Tip korisnika",
+      fieldName: "userType",
+      minWidth: 90,
+      maxWidth: 110,
+    },
+    {
+      key: "createdDate",
+      name: "Datum kreiranja",
+      fieldName: "createdDate",
+      minWidth: 100,
+      maxWidth: 110,
+    },
+    {
+      key: "city",
+      name: "Grad",
+      fieldName: "city",
+      minWidth: 70,
+      maxWidth: 100,
+    },
+    {
+      key: "address",
+      name: "Adresa",
+      fieldName: "address",
+      minWidth: 115,
+      maxWidth: 165,
+    },
+  ];
+
+  const renderContent = () => {
+    switch (state.type) {
+      case "Loading":
+        return <Spinner size={SpinnerSize.large} label="Učitavam podatke..." />;
+
+      case "Loaded": {
+        const filteredData = filterPersons(state.data, state.filter);
+
+        return (
+          <>
+            <Stack
+              horizontal={true}
+              horizontalAlign="space-between"
+              verticalAlign="center"
+            >
+              <Text>Pretraga korisnika</Text>
+              <Stack horizontal={true} tokens={{ childrenGap: 10 }}>
+                <DefaultButton text="Filter" onClick={toggleFilter} />
+                <DefaultButton text="Kreiranje" onClick={onStartKreiranje} />
+                {state.selectedRow ? (
+                  <DefaultButton
+                    text="Azuriranje"
+                    onClick={() => onStartAzuriranje(state.selectedRow!)}
+                  />
+                ) : null}
+              </Stack>
+            </Stack>
+            <Filter
+              {...state.filter}
+              onChangeUserName={onChangeUserName}
+              onChangeUserType={onChangeUserType}
+            />
+            <Table data={filteredData} columns={columns} />
+            {state.kreiranje.isVisible ? (
+              <Kreiranje {...state.kreiranje} onCancel={onCancelKreiranje} />
+            ) : null}
+            {state.azuriranje.isVisible ? (
+              <Azuriranje {...state.azuriranje} onCancel={onCancelAzuriranje} />
+            ) : null}
+          </>
+        );
+      }
+      case "Failed":
+        return (
+          <MessageBar messageBarType={MessageBarType.error}>
+            {state.error}
+          </MessageBar>
+        );
     }
-    setPage(1);
-  }
-
-  function openNewForm() {
-    // setPersonToEdit(null);
-    setIsFormOpen(true);
-  }
-
-  function openEditForm(person: Person) {
-    setPersonToEdit(person);
-    setIsFormOpen(true);
-  }
-
-  function closeForm() {
-    setIsFormOpen(false);
-    setPersonToEdit(null);
-  }
-
-  function savePerson(formData: PersonFormData) {
-    if (personToEdit) {
-      updatePerson(personToEdit.id, formData).then(() => {
-        closeForm();
-        loadPersons();
-        loadAllPersons();
-      });
-    } else {
-      createPerson(formData).then(() => {
-        closeForm();
-        loadPersons();
-        loadAllPersons();
-      });
-    }
-  }
-
-  function confirmDelete() {
-    if (personToDelete !== null) {
-      deletePerson(personToDelete).then(() => {
-        loadPersons();
-        loadAllPersons();
-      });
-    }
-    setPersonToDelete(null);
-    setSelectedPerson(null);
-  }
-
-  // isto ovo ali sa useMemo, racuna se samo kad se promeni lista osoba
-  // const userTypes = useMemo(() => {
-  //   const types = [];
-  //   persons.forEach((person) => {
-  //     if (!types.includes(person.userType)) {
-  //       types.push(person.userType);
-  //     }
-  //   });
-  //   return types;
-  // }, [persons]);
-
-  // tipovi korisnika se ne kucaju rucno, nego se izvlace iz liste osoba
-  // Set cuva samo jedinstvene vrednosti pa ne mora da se proverava da li tip vec postoji
-  const userTypesSet = new Set<string>();
-  allPersons.forEach((person) => {
-    userTypesSet.add(person.userType);
-  });
-  const userTypes = Array.from(userTypesSet);
+  };
 
   return (
-    <>
-      {/* sve u jednom redu: naslov, Nova osoba, Filteri, filteri (kad su otvoreni), Izmeni i Obrisi (kad je red selektovan) */}
-      <Stack
-        horizontal
-        verticalAlign="center"
-        tokens={{ childrenGap: 10 }}
-        styles={{ root: { margin: "0 0 10px 0" } }}
-      >
-        <Text variant="xLargePlus" styles={{ root: { marginRight: 10 } }}>
-          Osobe
-        </Text>
-        <PrimaryButton
-          text="Nova osoba"
-          iconProps={{ iconName: "Add" }}
-          onClick={openNewForm}
-        />
-        <DefaultButton
-          text="Filteri"
-          iconProps={{ iconName: "Filter" }}
-          onClick={() => setShowFilters(!showFilters)}
-        />
-        {showFilters && (
-          <Filters
-            nameFilter={nameFilter}
-            onNameFilterChange={setNameFilter} //ova 2 su zajedno
-            typeFilter={typeFilter}
-            onTypeFilterChange={(type) => {
-              setTypeFilter(type);
-              setPage(1);
-            }} //ova 2 su zajedno
-            userTypes={userTypes}
-          />
-        )}
-        {selectedPerson && (
-          <DefaultButton
-            text="Izmeni"
-            onClick={() => openEditForm(selectedPerson)}
-          />
-        )}
-        {selectedPerson && (
-          <DefaultButton
-            text="Obrisi"
-            onClick={() => setPersonToDelete(selectedPerson.id)}
-          />
-        )}
-      </Stack>
-      {persons.length === 0 ? (
-        <MessageBar messageBarType={MessageBarType.warning}>
-          Ne postoji rezultat za zadate kriterijume pretrage.
-        </MessageBar>
-      ) : (
-        <Text variant="small" block styles={{ root: { margin: "0 0 10px 0" } }}>
-          Broj prikazanih osoba: od {(page - 1) * PAGE_SIZE + 1} do{" "}
-          {(page - 1) * PAGE_SIZE + persons.length}
-        </Text>
-      )}
-      {persons.length > 0 && (
-        <div className="table-container">
-          <PersonTable
-            persons={persons}
-            onSelectionChange={setSelectedPerson}
-            sortField={sortField}
-            sortDescending={sortDescending}
-            onSort={sortBy}
-          />
-        </div>
-      )}
-      <Dialog
-        hidden={personToDelete === null}
-        onDismiss={() => setPersonToDelete(null)}
-        dialogContentProps={{
-          type: DialogType.normal,
-          title: "Brisanje osobe",
-          subText: "Da li ste sigurni da zelite da obrisete ovu osobu?",
-        }}
-      >
-        <DialogFooter>
-          <PrimaryButton text="Da" onClick={confirmDelete} />
-          <DefaultButton text="Ne" onClick={() => setPersonToDelete(null)} />
-          <DefaultButton
-            text="Otkazi"
-            onClick={() => setPersonToDelete(null)}
-          />
-        </DialogFooter>
-      </Dialog>
-      <Pagination
-        page={page}
-        totalPages={Math.ceil(totalCount / PAGE_SIZE)}
-        onPageChange={setPage}
-      />
-      {isFormOpen && (
-        <PersonForm
-          person={personToEdit}
-          onSave={savePerson}
-          onCancel={closeForm}
-        />
-      )}
-    </>
+    <Stack grow={1} styles={{ root: { padding: 10 } }}>
+      {renderContent()}
+    </Stack>
   );
-}
+};
 
-export default Persons;
+export default PersonsScreen;
